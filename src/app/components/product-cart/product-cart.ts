@@ -17,16 +17,5 @@ export class ProductCart {
 
   addToCartClicked = output<Product>();
 
-  store = inject(EcommerceStore);
-
-  isInWishlist = computed(() => this.store.wishlistItems().find(p => p.id === this.product().id))
-
-  toggleWishlist(product:Product){
-    if (this.isInWishlist()){
-      this.store.removeFromWishlist(product);
-    }else{
-      this.store.addToWishlist(product);
-    }
-  }
-
+  
 }

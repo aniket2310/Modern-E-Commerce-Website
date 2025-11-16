@@ -1,16 +1,16 @@
 import { Component, computed, inject, input, signal,effect  } from '@angular/core';
-import { Product } from '../../models/product';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { ProductCart } from '../../components/product-cart/product-cart';
 import {MatSidenavContainer, MatSidenavContent, MatSidenav,} from '@angular/material/sidenav'
 import { MatNavList, MatListItem, MatListItemTitle } from '@angular/material/list'
 import { RouterLink } from '@angular/router';
 import { EcommerceStore } from '../../ecommerce-store';
+import { ToggleWishlistButton } from "../../components/toggle-wishlist-button/toggle-wishlist-button";
  
 
 @Component({
   selector: 'app-products-grid',
-  imports: [CommonModule, ProductCart, MatSidenavContainer, MatSidenavContent, MatSidenav, MatNavList, MatListItem, MatListItemTitle,RouterLink,TitleCasePipe],
+  imports: [CommonModule, ProductCart, MatSidenavContainer, MatSidenavContent, MatSidenav, MatNavList, MatListItem, MatListItemTitle, RouterLink, TitleCasePipe, ToggleWishlistButton],
   templateUrl: './products-grid.html',
   styleUrl: './products-grid.scss',
 })
