@@ -15,7 +15,6 @@ export class ProductCart {
 
   product = input.required<Product>();
 
-  addToCartClicked = output<Product>();
-
+  store = inject(EcommerceStore);
   
 }
