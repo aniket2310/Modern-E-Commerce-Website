@@ -4,6 +4,11 @@ import {patchState, signalMethod, signalStore, withComputed, withMethods, withSt
 import {produce} from "immer";
 import { Toaster } from "./services/toaster";
 import { CartItems } from "./models/cart";
+import { MatDialog } from "@angular/material/dialog";
+import { SignInDailog } from "./components/sign-in-dailog/sign-in-dailog";
+import { SignInParams, SignUpParams, User } from "./models/user";
+import { Router } from "@angular/router";
+import { Order } from "./models/order";
 
 
 export type EcommerceState ={
@@ -11,6 +16,9 @@ export type EcommerceState ={
     category:string;
     wishlistItems:Product[];
     cartItems:CartItems[];
+    user: User | undefined;
+    loading : boolean;
+    
 }
 
 export const EcommerceStore = signalStore(
@@ -242,6 +250,8 @@ export const EcommerceStore = signalStore(
         category: 'all',
         wishlistItems:[],
         cartItems:[],
+        user:undefined,
+        loading:false,
         
     }as EcommerceState),
 
@@ -260,6 +270,8 @@ cartCount: computed(() =>
   // methods — inject services here and use store signals
   withMethods((store) => {
     const toaster = inject(Toaster);
+    const Matdailog = inject(MatDialog);
+    const router = inject(Router);
 
     return {
       setCategory: signalMethod<string>((category: string) => {
@@ -331,7 +343,78 @@ cartCount: computed(() =>
       },
       removeFromCart: (product : Product) => {
         patchState(store,{cartItems:store.cartItems().filter((c) => c.product.id !== product.id)})
+      },
+      proceedToCheckout:() => {
+        if (!store.user()){
+        Matdailog.open(SignInDailog,{
+          disableClose:true,
+          data:{
+            checkout:true
+          }
+        });
+        return;
       }
+      router.navigate(['\checkout']);
+      },
+      placeOrder:async () =>{
+        patchState(store,{loading:true});
+
+        const user = store.user();
+
+        if(!user){
+          toaster.error('Please login before placing order')
+          patchState(store,{loading:false});
+          return;
+        }
+
+        const order:Order ={
+          id:crypto.randomUUID(),
+          userId: user.id,
+          total: Math.round(store.cartItems().reduce((acc,item) => acc + item.quantity * item.product.price, 0)),
+          items:store.cartItems(),
+          paymentStatus:'success'
+        };
+        await new Promise((resolve) => setTimeout(resolve,1000));
+
+        patchState(store,{loading: false,cartItems:[]});
+        router.navigate(['order-success']);
+      },
+      signIn : ({email,password,checkout,dailogId}:SignInParams) => {
+        patchState(store,{
+          user:{
+              id:'1',
+              email,
+              name:'John Doe',
+              imageUrl:'https://randomuser.me/api/portraits/men/1.jpg'
+
+          },
+        });
+        const dailog = Matdailog.getDialogById(dailogId)?.close();
+        if(checkout){
+            router.navigate(['/checkout'])
+        }
+      },
+      signUp : ({email,password,name,checkout,dailogId}:SignUpParams) => {
+        patchState(store,{
+          user:{
+              id:'1',
+              email,
+              name:'John Doe',
+              imageUrl:'https://randomuser.me/api/portraits/men/1.jpg'
+
+          },
+        });
+        const dailog = Matdailog.getDialogById(dailogId)?.close();
+        if(checkout){
+            router.navigate(['/checkout'])
+        }
+      },
+      signOut: () =>{
+        patchState(store,{user: undefined});
+      },
+
+
+
     };
   })
 );

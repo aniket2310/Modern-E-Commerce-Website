@@ -1,0 +1,25 @@
+<div appViewPanel>
+  <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+    <mat-icon>payment</mat-icon>
+    Payment Options
+  </h2>
+  <div>
+    <mat-radio-group formControlName="paymentMethod" class="flex flex-col gap-4">
+      <mat-radio-button value="stripe">
+        <img src="assets/images/Stripe_Logo.png" alt="stripe" class="h-6" />
+      </mat-radio-button>
+
+      <mat-radio-button value="razorpay" class="payment-option flex items-center gap-3">
+        <img src="assets/images/Razorpay_Logo.png" alt="Razorpay" class="h-6" />
+      </mat-radio-button>
+
+      <mat-radio-button value="gpay" class="payment-option flex items-center gap-3">
+        <img src="assets/images/GPay_Logo.png" alt="GPay" class="h-6" />
+      </mat-radio-button>
+
+      <mat-radio-button value="paypal" class="payment-option flex items-center gap-3">
+        <img src="assets/images/Paypal_Logo.png" alt="PayPal" class="h-6" />
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
+</div>
