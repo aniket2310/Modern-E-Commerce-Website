@@ -9,6 +9,7 @@ import { SignInDailog } from "./components/sign-in-dailog/sign-in-dailog";
 import { SignInParams, SignUpParams, User } from "./models/user";
 import { Router } from "@angular/router";
 import { Order } from "./models/order";
+import {withStorageSync} from "@angular-architects/ngrx-toolkit";
 
 
 export type EcommerceState ={
@@ -18,6 +19,7 @@ export type EcommerceState ={
     cartItems:CartItems[];
     user: User | undefined;
     loading : boolean;
+    selectedProductId: string | undefined;
     
 }
 
@@ -252,6 +254,7 @@ export const EcommerceStore = signalStore(
         cartItems:[],
         user:undefined,
         loading:false,
+        selectedProductId:undefined
         
     }as EcommerceState),
 
@@ -262,10 +265,20 @@ export const EcommerceStore = signalStore(
       return store.products().filter((p) => p.category.toLowerCase() === filterCategory);
     }),
     wishlistCount: computed(() => store.wishlistItems().length),
-cartCount: computed(() =>
-  store.cartItems().reduce((sum, item) => sum + item.quantity, 0)
-)
+    cartCount: computed(() =>
+    store.cartItems().reduce((sum, item) => sum + item.quantity, 0)),
+    selectedProduct: computed(() => {
+    const id = store.selectedProductId();
+    if (!id) return undefined;
+    return store.products().find(p => p.id === id);
+  })
   })),
+  
+
+  withStorageSync({
+    key: 'modern-store',
+    select: ({ wishlistItems, cartItems, user }) => ({ wishlistItems, cartItems, user }),
+  }),
 
   // methods — inject services here and use store signals
   withMethods((store) => {
@@ -276,6 +289,10 @@ cartCount: computed(() =>
     return {
       setCategory: signalMethod<string>((category: string) => {
         patchState(store, { category });
+      }),
+
+      setProductId: signalMethod<string>((productId:string)=>{
+        patchState(store,{selectedProductId:productId});
       }),
 
       addToWishlist: (product: Product) => {
