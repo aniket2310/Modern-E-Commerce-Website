@@ -16,6 +16,10 @@
             </p>
 
             <!-- add rating component  -->
+             <app-star-rating class="mb-3" [rating]="product().rating">
+                ({{product().reviewCount}} reviews)
+             </app-star-rating>
+
 
             <div class="text-sm font-medium mb-4">
                 {{product().instock ? 'In Stock' : 'Out of Stock'}}
